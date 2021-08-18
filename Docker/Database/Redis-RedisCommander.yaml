@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+
+  redis:
+    image: redis:latest
+    # Leave commented for local docker network ONLY access, if uncommented it'll be locally accesible at port 6379
+    # ports:
+    #   - 6379:6379
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - local
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=user
+      - HTTP_PASSWORD=password
+    ports:
+      - 8081:8081
+    depends_on:
+      - redis
+    networks:
+      - local
+    
+volumes:
+  redis_data:
+networks: 
+  local:
